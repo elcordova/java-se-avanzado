@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import com.anncode.amazonviewer.model.*;
@@ -258,27 +259,19 @@ public class Main {
                 .filter(movie -> movie.getIsViewed())
                 .forEach(m -> contentReport.append(m.toString() + "\n"));
 
-        series.stream();
-
-        /*
-        for (Serie serie : series) {
+//        Predicate<Serie> chaptersSerie = serie -> serie.getIsViewed();
+        Consumer<Serie> serieEach = serie -> {
             ArrayList<Chapter> chapters = serie.getChapters();
-            for (Chapter chapter : chapters) {
-                if (chapter.getIsViewed()) {
-                    contentReport += chapter.toString() + "\n";
+            chapters.stream()
+                    .filter(chapter -> chapter.getIsViewed())
+                    .forEach(chapter -> contentReport.append(chapter.toString() + "\n"));
+        };
+        series.stream().forEach(serieEach);
 
-                }
-            }
-        }
+        books.stream()
+                .filter(book -> book.getIsReaded())
+                .forEach(b -> contentReport.append(b.toString() + "\n"));
 
-
-        for (Book book : books) {
-            if (book.getIsReaded()) {
-                contentReport += book.toString() + "\n";
-
-            }
-        }
-*/
         report.setContent(contentReport.toString());
         report.makeReport();
         System.out.println("Reporte Generado");
@@ -296,32 +289,19 @@ public class Main {
 
         SimpleDateFormat dfNameDays = new SimpleDateFormat("E, W MMM Y");
         dateString = dfNameDays.format(date);
-        String contentReport = ":: VISTOS :: \n Date: " + dateString + "\n\n\n";
-
-        for (Movie movie : movies) {
-            if (movie.getIsViewed()) {
-                contentReport += movie.toString() + "\n";
-
-            }
-        }
-
-        for (Serie serie : series) {
+        StringBuilder contentReport = new StringBuilder();
+        contentReport.append(":: VISTOS :: \n Date: " + dateString + "\n\n\n");
+        Predicate<Film> isViewed = movie -> movie.getIsViewed();
+        movies.stream().filter(isViewed).forEach(movie -> contentReport.append(movie.toString() + "\n"));
+        Consumer<Serie> serieEach = serie -> {
             ArrayList<Chapter> chapters = serie.getChapters();
-            for (Chapter chapter : chapters) {
-                if (chapter.getIsViewed()) {
-                    contentReport += chapter.toString() + "\n";
-
-                }
-            }
-        }
-
-        for (Book book : books) {
-            if (book.getIsReaded()) {
-                contentReport += book.toString() + "\n";
-
-            }
-        }
-        report.setContent(contentReport);
+            chapters.stream()
+                    .filter(isViewed)
+                    .forEach(chapter -> contentReport.append(chapter.toString() + "\n"));
+        };
+        series.stream().forEach(serieEach);
+        books.stream().filter(book -> book.getIsReaded()).forEach(book->contentReport.append(book.toString() + "\n"));
+        report.setContent(contentReport.toString());
         report.makeReport();
 
         System.out.println("Reporte Generado");
