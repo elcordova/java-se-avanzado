@@ -89,6 +89,8 @@ public class Movie extends Film implements IVisualizable, MovieDAO {
      */
     @Override
     public void view() {
+        Movie movie = new Movie();
+        movie.setMovieViewed(this);
         setViewed(true);
         Date dateI = startToSee(new Date());
 

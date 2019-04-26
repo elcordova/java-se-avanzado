@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 import com.anncode.amazonviewer.model.*;
 import com.anncode.util.AmazonUtil;
@@ -85,9 +87,10 @@ public class Main {
         } while (exit != 0);
     }
 
-    static ArrayList<Movie> movies = Movie.makeMoviesList();
+    static ArrayList<Movie> movies = new ArrayList();
 
     public static void showMovies() {
+        movies = Movie.makeMoviesList();
         int exit = 1;
 
         do {
@@ -95,9 +98,8 @@ public class Main {
             System.out.println(":: MOVIES ::");
             System.out.println();
 
-            for (int i = 0; i < movies.size(); i++) { //1. Movie 1
-                System.out.println(i + 1 + ". " + movies.get(i).getTitle() + " Visto: " + movies.get(i).isViewed());
-            }
+            AtomicInteger atomicInteger = new AtomicInteger(1);
+            movies.forEach(movie ->System.out.println(atomicInteger.getAndIncrement()+".-"+movie.getTitle() + " Visto: " + movie.isViewed()) );
 
             System.out.println("0. Regresar al Menu");
             System.out.println();
@@ -249,15 +251,16 @@ public class Main {
         Report report = new Report();
         report.setNameFile("reporte");
         report.setExtension("txt");
-        String contentReport = ":: VISTOS ::\n";
+        StringBuilder contentReport = new StringBuilder();
+        contentReport.append(":: VISTOS ::\n");
 
-        for (Movie movie : movies) {
-            if (movie.getIsViewed()) {
-                contentReport += movie.toString() + "\n";
+        movies.stream()
+                .filter(movie -> movie.getIsViewed())
+                .forEach(m -> contentReport.append(m.toString() + "\n"));
 
-            }
-        }
+        series.stream();
 
+        /*
         for (Serie serie : series) {
             ArrayList<Chapter> chapters = serie.getChapters();
             for (Chapter chapter : chapters) {
@@ -275,8 +278,8 @@ public class Main {
 
             }
         }
-
-        report.setContent(contentReport);
+*/
+        report.setContent(contentReport.toString());
         report.makeReport();
         System.out.println("Reporte Generado");
         System.out.println();
