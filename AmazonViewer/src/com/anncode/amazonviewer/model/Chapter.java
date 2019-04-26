@@ -55,7 +55,11 @@ public class Chapter extends Movie {
                 "\n Duration: " + getDuration();
     }
 
-
+    /**
+     *
+     * @param serie
+     * @return
+     */
     public static ArrayList<Chapter> makeChaptersList(Serie serie) {
         ArrayList<Chapter> chapters = new ArrayList();
 
